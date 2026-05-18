@@ -1,67 +1,59 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
 name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
-
     runs-on: [self-hosted]
 
     strategy:
       matrix:
         node-version: [18]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+
     - run: npm ci
-    - run: npm run build --if-present
     - run: npm test
 
-    - uses: actions/checkout@v2
-      with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-    - uses: sonarsource/sonarqube-scan-action@master
+    # SonarQube
+    - name: SonarQube Scan
+      uses: sonarsource/sonarqube-scan-action@master
       env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      # If you wish to fail your job when the Quality Gate is red, uncomment the
-      # following lines. This would typically be used to fail a deployment.
-      # - uses: sonarsource/sonarqube-quality-gate-action@master
-      #   timeout-minutes: 5
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-    - name: Run Trivy scanner without cache
-      uses: aquasecurity/trivy-action@v0.36.0
+    # Trivy (safer config)
+    - name: Run Trivy scanner
+      uses: aquasecurity/trivy-action@0.36.0
       with:
         scan-type: 'fs'
         scan-ref: '.'
-        cache: 'true'
+        cache: 'false'
 
-    - name: Run Docker Build
+    # Docker build
+    - name: Build Docker image
       run: |
-        docker build -t node-app .
-        docker tag my-app ranasinghedd/node-app:v1
-    
-    - name: Login to Docker Hub and push
+        docker build -t ranasinghedd/node-app:v1 .
+
+    # Docker login
+    - name: Login to Docker Hub
       uses: docker/login-action@v4
       with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-    - run: |
-        docker push ranasinghedd/node-app:v1
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-          
+    # Push image
+    - name: Push Docker image
+      run: |
+        docker push ranasinghedd/node-app:v1
