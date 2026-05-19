@@ -57,3 +57,23 @@ jobs:
     - name: Push Docker image
       run: |
         docker push ranasinghedd/node-app:v1
+
+  deploy: 
+   needs: build-analyze-scan
+   runs-on: [self-hosted]
+   steps:
+    - name: docker pull image
+      run: docker pull ranasinghedd/node-app:v1
+
+    - name: Scan docker image
+      uses: aquasecurity/trivy-action@v0.36.0
+      with:
+          image-ref: 'docker.io/ranasinghedd/node-app:v1'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+    - name: Deploy container
+      run: docker run -d --name node-app -p 3000:3000 ranasinghedd/node-app:v1
