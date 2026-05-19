@@ -4,7 +4,7 @@ metadata:
   name: {{.Release.Name}}-service
 spec:
   selector:
-    name: {{.Release.Name}}
+    app: {{.Release.Name}}
   ports:
     - protocol: TCP
       port: {{.Values.service.port}}
