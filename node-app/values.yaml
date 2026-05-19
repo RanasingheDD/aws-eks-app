@@ -1,7 +1,7 @@
 replicaCount: 2
 image:
   repository: ranasinghedd/node-app
-  tag: v1
+  tag: v2
   pullPolicy: IfNotPresent
 
 service:
