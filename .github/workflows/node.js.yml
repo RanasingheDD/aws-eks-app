@@ -59,7 +59,7 @@ jobs:
         docker push ranasinghedd/node-app:v1
 
   deploy: 
-   needs: build-analyze-scan
+   needs: build
    runs-on: [self-hosted]
    steps:
     - name: docker pull image
