@@ -75,5 +75,13 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
 
-    - name: Deploy container
-      run: docker run -d --name node-app -p 3000:3000 ranasinghedd/node-app:v1
+#    - name: Deploy container
+#      run: docker run -d --name node-app -p 3000:3000 ranasinghedd/node-app:v1
+    - name: Verify cluster access
+      run: kubectl get nodes
+
+    - name: Deploy Helm chart
+      run: |
+          helm upgrade --install my-app ./node-app
+          kubectl apply -f values.yaml
+

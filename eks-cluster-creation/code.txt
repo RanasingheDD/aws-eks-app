@@ -1,0 +1,27 @@
+   
+    eksctl create cluster \
+   --name=dev-eks-cluster \
+   --region=eu-north-1 \
+   --zones=eu-north-1a,eu-north-1b \
+   --without-nodegroup 
+
+   eksctl utils associate-iam-oidc-provider \
+    --region eu-north-1 \
+    --cluster dev-eks-cluster \
+    --approve
+   
+   eksctl create nodegroup \
+     --cluster dev-eks-cluster \
+     --name on-demand-ng \
+     --instance-types t3.small \
+     --nodes 2 \
+     --nodes-min 2 \
+     --nodes-max 2 \
+     --node-volume-size 20 \
+     --node-volume-type gp3 \
+     --ssh-access \
+     --ssh-public-key test \
+     --managed \
+     --alb-ingress-access \
+     --asg-access \
+     --full-ecr-access

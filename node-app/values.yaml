@@ -1,0 +1,11 @@
+replicaCount: 2
+image:
+  repository: ranasinghedd/node-app:v1
+  tag: v1
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer   # or ClusterIP
+  port: 3000
+
+containerPort: 3000
