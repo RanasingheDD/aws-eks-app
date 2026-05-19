@@ -14,10 +14,10 @@ app.get("/health", (req, res) => {
 // Dummy data endpoint
 app.get("/api/data", (req, res) => {
   res.status(200).json({
-    message: "This is dummy data",
+    message: "This is for testing",
     data: {
       id: 1,
-      name: "Sample Item",
+      name: "Dummy item",
       value: Math.floor(Math.random() * 100),
     },
   });
