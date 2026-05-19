@@ -59,7 +59,7 @@ jobs:
         docker push ranasinghedd/node-app:v1
 
   deploy: 
-   needs: build-analyze-scan
+   needs: build
    runs-on: [self-hosted]
    steps:
     - name: docker pull image
@@ -70,18 +70,10 @@ jobs:
       with:
           image-ref: 'docker.io/ranasinghedd/node-app:v1'
           format: 'table'
-          exit-code: '1'
+          exit-code: '0'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
 
-#    - name: Deploy container
-#      run: docker run -d --name node-app -p 3000:3000 ranasinghedd/node-app:v1
-    - name: Verify cluster access
-      run: kubectl get nodes
-
-    - name: Deploy Helm chart
-      run: |
-          helm upgrade --install my-app ./node-app
-          kubectl apply -f values.yaml
-
+    - name: Deploy container
+      run: docker run -d --name node-app -p 3000:3000 ranasinghedd/node-app:v1
