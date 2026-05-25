@@ -85,8 +85,6 @@ jobs:
       with:
        version: 'latest' # You can also specify versions like 'v3.12.0'
 
-    - name: Deploy Helm chart
-      run: |
-        helm upgrade --install node-app ./node-app \
-          -f ./node-app/values.yaml
+    - name: Deploy Helm chart using argocd
+      run: kubectl apply -f application.yaml
 
